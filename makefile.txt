@@ -1,0 +1,17 @@
+CXX ?= g++
+
+SRC_DIR ?= ./src
+OBJ_DIR ?= ./build
+
+CPP_FILES := $(wildcard $(SRC_DIR)/*.cpp $(SRC_DIR)/*/*.cpp)
+OBJ_FILES := $(wildcard $(OBJ_DIR)/*.o)
+
+INC_DIRS := $(wildcard include/ include/*/)
+INC_FLAGS := $(addprefix -I, $(INC_DIRS))
+
+EXE ?= red_void
+
+CXXFLAGS ?= $(INC_FLAGS) -Wall
+
+all:
+	$(CXX) $(CXXFLAGS) -o bin/$(EXE).exe $(CPP_FILES)
