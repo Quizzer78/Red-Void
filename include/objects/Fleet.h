@@ -16,6 +16,10 @@ class Fleet : public AbstractIdentifier, public AbstractName {
 
         void addShip(ShipVariant variant, int number=1);
         bool removeShip(const std::string& id, int number=-1);
+        void clear();
+
+        Ship& getShip(const std::string& id);
+        const std::unordered_map<std::string, Ship>& getShips() const;
 
     private:
         std::unordered_map<std::string, Ship> ships_;

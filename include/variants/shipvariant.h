@@ -10,7 +10,8 @@
 #define SHIPVARIANT_H
 
 enum class ShipVariant {
-    TEST,
+    PIRATE_FIGHTER,
+    PIRATE_GALLEON,
     MAX_SHIP_VARIANT,
 };
 

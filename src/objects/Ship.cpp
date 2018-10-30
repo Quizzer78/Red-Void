@@ -4,6 +4,7 @@
 
 #include "AbstractIdentifier.h"
 #include "AbstractName.h"
+#include "random.h"
 #include "Ship.h"
 #include "weaponvariant.h"
 
@@ -25,6 +26,11 @@ void Ship::addWeapon(WeaponVariant variant, int number) {
 }
 bool Ship::removeWeapon(const std::string& id, int number) {
     return false; //TODO
+}
+int Ship::rollInitiative() {
+    std::uniform_int_distribution<int> distribution { 0, 10 };
+    initiative_ = distribution(random::engine) + mobility_;
+    return initiative_;
 }
 
 long   Ship::getCost()         const {

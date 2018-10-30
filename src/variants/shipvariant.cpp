@@ -37,18 +37,36 @@ Ship shipvariant::createShip(ShipVariant variant) {
 
 void shipvariant::initializeMaps() {
     typedef std::vector<std::tuple<Weapon, int>> weaponvec;
+    ShipVariant variant { ShipVariant::MAX_SHIP_VARIANT };
 
-    ShipVariant variant { ShipVariant::TEST };
-    shipvariant::        nameMap.emplace( variant, "name" );
-    shipvariant::  pluralNameMap.emplace( variant, "names" );
-    shipvariant:: descriptionMap.emplace( variant, "des" );
-    shipvariant::        costMap.emplace( variant, 0 );
-    shipvariant::        sizeMap.emplace( variant, 0 );
-    shipvariant::  hullPointsMap.emplace( variant, 0.0 );
-    shipvariant:: armorPointsMap.emplace( variant, 0.0 );
+    variant = ShipVariant::PIRATE_FIGHTER;
+    shipvariant::        nameMap.emplace( variant, "Pirate Fighter" );
+    shipvariant::  pluralNameMap.emplace( variant, "Pirate Fighters" );
+    shipvariant:: descriptionMap.emplace( variant,
+        "A pirate fighter." );
+    shipvariant::        costMap.emplace( variant, 800 );
+    shipvariant::        sizeMap.emplace( variant, 1 );
+    shipvariant::  hullPointsMap.emplace( variant, 5.0 );
+    shipvariant:: armorPointsMap.emplace( variant, 3.0 );
     shipvariant::shieldPointsMap.emplace( variant, 0.0 );
     shipvariant::pointDefenseMap.emplace( variant, 0.0 );
-    shipvariant::    mobilityMap.emplace( variant, 0 );
+    shipvariant::    mobilityMap.emplace( variant, 8 );
+    shipvariant::     weaponsMap.emplace( variant,
+        weaponvec{ { weaponvariant::createWeapon(WeaponVariant::TEST), 1 } }
+    );
+
+    variant = ShipVariant::PIRATE_GALLEON;
+    shipvariant::        nameMap.emplace( variant, "Pirate Galleon" );
+    shipvariant::  pluralNameMap.emplace( variant, "Pirate Galleons" );
+    shipvariant:: descriptionMap.emplace( variant,
+        "A pirate galleon." );
+    shipvariant::        costMap.emplace( variant, 80000 );
+    shipvariant::        sizeMap.emplace( variant, 4 );
+    shipvariant::  hullPointsMap.emplace( variant, 30.0 );
+    shipvariant:: armorPointsMap.emplace( variant, 40.0 );
+    shipvariant::shieldPointsMap.emplace( variant, 0.0 );
+    shipvariant::pointDefenseMap.emplace( variant, 1.5 );
+    shipvariant::    mobilityMap.emplace( variant, 4 );
     shipvariant::     weaponsMap.emplace( variant,
         weaponvec{ { weaponvariant::createWeapon(WeaponVariant::TEST), 1 } }
     );
