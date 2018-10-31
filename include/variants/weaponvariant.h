@@ -8,8 +8,20 @@
 
 enum class WeaponVariant {
     MINI_LASER,
+    PULSE_LASER,
+    PARTICLE_BEAM,
+
     AUTOCANNON,
+    SMALL_RAILGUN,
+    RAILGUN,
+    EVISCERATOR_FLAK,
+
+    INTERCEPTOR_MISSILE,
     LIGHT_MISSILE,
+    HEAVY_MISSILE,
+
+    TORPEDO,
+
     MAX_WEAPON_VARIANT,
 };
 

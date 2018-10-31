@@ -39,41 +39,29 @@ void Ship::takeDamage(const Weapon& weapon, int number, double pointDefense) {
         remainingDamage *= std::exp(-0.5 * pointDefense);
     }
 
-    remainingDamage *= weapon.getShieldEffectiveness();
-    if (remainingDamage > this->shieldPoints_) {
-        remainingDamage -= this->shieldPoints_;
-        this->shieldPoints_ = 0.0;
+    if (shieldPoints_ > 0.0 && remainingDamage > 0.0) {
+        remainingDamage *= weapon.getShieldEffectiveness();
+        double shield = shieldPoints_;
+        shieldPoints_ -= remainingDamage;
+        remainingDamage -= shield;
+        remainingDamage *= 1.0 / weapon.getShieldEffectiveness();
     }
-    else {
-        this->shieldPoints_ -= remainingDamage;
-        return;
-    }
-    remainingDamage *= 1.0 / weapon.getShieldEffectiveness();
 
-
-    remainingDamage *= weapon.getArmorEffectiveness();
-    if (remainingDamage > this->armorPoints_) {
-        remainingDamage -= this->armorPoints_;
-        this->armorPoints_ = 0.0;
+    if (armorPoints_ > 0.0 && remainingDamage > 0.0) {
+        remainingDamage *= weapon.getArmorEffectiveness();
+        double armor = armorPoints_;
+        armorPoints_ -= remainingDamage;
+        remainingDamage -= armor;
+        remainingDamage *= 1.0 / weapon.getArmorEffectiveness();
     }
-    else {
-        this->armorPoints_ -= remainingDamage;
-        return;
-    }
-    remainingDamage *= 1.0 / weapon.getArmorEffectiveness();
 
-
-
-    remainingDamage *= weapon.getHullEffectiveness();
-    if (remainingDamage > this->hullPoints_) {
-        remainingDamage -= this->hullPoints_;
-        this->hullPoints_ = -1.0;
+    if (hullPoints_ > 0.0 && remainingDamage > 0.0) {
+        remainingDamage *= weapon.getHullEffectiveness();
+        double hull = hullPoints_;
+        hullPoints_ -= remainingDamage;
+        remainingDamage -= hull;
+        remainingDamage *= 1.0 / weapon.getHullEffectiveness();
     }
-    else {
-        this->hullPoints_ -= remainingDamage;
-        return;
-    }
-    remainingDamage *= 1.0 / weapon.getHullEffectiveness();
 }
 
 long   Ship::getCost()         const {

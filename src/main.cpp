@@ -15,7 +15,7 @@ int main() {
     State gameState {
         Scene::MAIN, // currentScene
         0, // currentCredits
-        10000,
+        100000,
         { "Player Fleet", "Player Fleets", "This is the player's fleet." },
         { "Enemy Fleet", "Enemy Fleets", "This is the enemy's fleet." }
     };
