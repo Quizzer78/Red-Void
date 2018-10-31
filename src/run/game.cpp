@@ -1,6 +1,9 @@
 #include <iostream>
+#include <queue>
 #include <stdexcept>
 #include <string>
+#include <vector>
+#include <Windows.h>
 
 #include "Fleet.h"
 #include "game.h"
@@ -34,6 +37,8 @@ void game::runMain(State& state) {
 
 
 void game::runSetup(State& state) {
+
+    // CREATE ENEMY FLEET
     if (state.enemyFleet.getShips().empty()) {
         long enemyCredits { state.defaultCredits };
         std::uniform_int_distribution<int> distribution
@@ -59,6 +64,7 @@ void game::runSetup(State& state) {
               << "?: ";
     int choice { input::intInput() };
 
+    // ADD SHIP
     if (choice == 1) {
         ShipVariant variant;
         for (int i = 0; i < static_cast<int>(ShipVariant::MAX_SHIP_VARIANT); ++i) {
@@ -112,6 +118,7 @@ void game::runSetup(State& state) {
         }
     }
 
+    // REMOVE SHIP
     else if (choice == 2) {
         std::cout << "ID?: ";
         std::string id { input::strInput() };
@@ -125,6 +132,7 @@ void game::runSetup(State& state) {
         }
     }
 
+    // VIEW FLEET
     else if (choice == 3) {
         auto ships = state.playerFleet.getShips();
         for (const auto& pair : ships) {
@@ -140,15 +148,18 @@ void game::runSetup(State& state) {
         }
     }
 
+    // CLEAR FLEET
     else if (choice == 4) {
         state.playerFleet.clear();
         state.currentCredits = state.defaultCredits;
     }
 
+    // GO TO BATTLE
     else if (choice == 5) {
         state.currentScene = Scene::BATTLE;
     }
 
+    // EXIT
     else if (choice == 6) {
         state.currentScene = Scene::EXIT;
     }
@@ -159,25 +170,131 @@ void game::runSetup(State& state) {
 
 
 void game::runBattle(State& state) {
-    auto playerShips = state.playerFleet.getShips();
-    auto enemyShips = state.enemyFleet.getShips();
+    auto& playerShips = state.playerFleet.getShips();
+    auto& enemyShips = state.enemyFleet.getShips();
+
+    const auto comp =
+        [](const Ship* s1, const Ship* s2)
+        { return s1->getInitiative() < s2->getInitiative(); };
+    std::priority_queue<Ship*, std::vector<Ship*>, decltype(comp)> initiativeQueue { comp };
 
     std::cout << "Initiative Rolls:\n"
               << "Player's:\n";
     for (auto& pair : playerShips) {
         Ship& ship = pair.second;
         std::cout << ship.getName() << ": " << ship.rollInitiative() << '\n';
+        initiativeQueue.push(&ship);
     }
     std::cout << "\nEnemy's:\n";
     for (auto& pair : enemyShips) {
         Ship& ship = pair.second;
         std::cout << ship.getName() << ": " << ship.rollInitiative() << '\n';
+        initiativeQueue.push(&ship);
     }
+    Sleep(500);
+
+    std::vector<Ship*> usedShips;
+    Ship* activeShip = nullptr;
+
+    auto& targetShips = playerShips;
+    auto& targetFleet = state.playerFleet;
 
     while (!playerShips.empty() && !enemyShips.empty()) {
 
+        if (initiativeQueue.empty()) {
+            for (Ship* ship : usedShips) {
+                initiativeQueue.push(ship);
+            }
+            usedShips.clear();
+        }
+
+        do {
+            activeShip = initiativeQueue.top();
+            initiativeQueue.pop();
+        } while (activeShip == nullptr || activeShip->getHullPoints() < 0.0);
+        if (initiativeQueue.empty()) {
+            continue;
+        }
+
+        std::cout << activeShip->getName() << "'s turn!\n";
+        std::cout
+            << "    Hull: " << activeShip->getHullPoints() << '\n'
+            << "    Armor: " << activeShip->getArmorPoints() << '\n'
+            << "    Shield: " << activeShip->getShieldPoints() << '\n'
+            << "    Point Defense: " << activeShip->getPointDefense() << '\n'
+            << "    Mobility: " << activeShip->getMobility() << '\n';
+        Sleep(500);
+
+        // Check if activeShip is in playerFleet
+        if (playerShips.find(activeShip->getID()) != playerShips.end()) {
+            targetShips = enemyShips;
+            targetFleet = state.enemyFleet;
+        }
+        else {
+            targetShips = playerShips;
+            targetFleet = state.playerFleet;
+        }
+
+        // Shoot with each weapon bank
+        for (const auto& weaponPair : activeShip->getWeapons()) {
+            const Weapon& weapon = std::get<0>(weaponPair);
+            int num = std::get<1>(weaponPair);
+            if (targetShips.empty()) {
+                break;
+            }
+            // Find target
+            Ship& target = targetFleet.findBestTarget(weapon, num);
+
+            if (num == 1) {
+                std::cout << activeShip->getName() << " fires its "
+                          << weapon.getName() << " at " << target.getName() << "!\n";
+            }
+            else {
+                std::cout << activeShip->getName() << " fires its " << num << " "
+                          << weapon.getPluralName() << " at " << target.getName() << "!\n";
+            }
+            Sleep(500);
+
+
+            // Attempt attack
+            std::uniform_real_distribution<double> distribution { 0.0, 1.0 };
+            if (distribution(random::engine) <
+                weapon.getAccuracy() * (10.0 / (target.getMobility() + 10.0))) {
+
+                std::cout << activeShip->getName() << " hits!\n";
+
+                // Deal damage
+                target.takeDamage(weapon, num, targetFleet.getTotalPointDefense());
+
+                if (target.getHullPoints() < 0.0) {
+                    std::cout << target.getName() << " is destroyed!\n";
+
+                    if(!targetFleet.removeShip(target.getID())) {
+                        std::cerr << "Error, ship not removed\n";
+                    }
+                }
+            }
+            else {
+                std::cout << activeShip->getName() << " misses!\n";
+            }
+            Sleep(500);
+        }
+        for (auto it = usedShips.begin(); it != usedShips.end();) {
+            if (*it == nullptr) {
+                it = usedShips.erase(it);
+            }
+            else {
+                ++it;
+            }
+        }
+
+        usedShips.push_back(activeShip);
     }
-
-
-    return;
+    if (playerShips.empty()) {
+        std::cout << "Enemy win!\n";
+    }
+    else if (enemyShips.empty()) {
+        std::cout << "Player win!\n";
+    }
+    state.currentScene = Scene::MAIN;
 }

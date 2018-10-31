@@ -1,3 +1,4 @@
+#include <cmath>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -31,6 +32,48 @@ int Ship::rollInitiative() {
     std::uniform_int_distribution<int> distribution { 0, 10 };
     initiative_ = distribution(random::engine) + mobility_;
     return initiative_;
+}
+void Ship::takeDamage(const Weapon& weapon, int number, double pointDefense) {
+    double remainingDamage { weapon.getDamage() * (number * 1.0) };
+    if (weapon.isGuided()) {
+        remainingDamage *= std::exp(-0.5 * pointDefense);
+    }
+
+    remainingDamage *= weapon.getShieldEffectiveness();
+    if (remainingDamage > this->shieldPoints_) {
+        remainingDamage -= this->shieldPoints_;
+        this->shieldPoints_ = 0.0;
+    }
+    else {
+        this->shieldPoints_ -= remainingDamage;
+        return;
+    }
+    remainingDamage *= 1.0 / weapon.getShieldEffectiveness();
+
+
+    remainingDamage *= weapon.getArmorEffectiveness();
+    if (remainingDamage > this->armorPoints_) {
+        remainingDamage -= this->armorPoints_;
+        this->armorPoints_ = 0.0;
+    }
+    else {
+        this->armorPoints_ -= remainingDamage;
+        return;
+    }
+    remainingDamage *= 1.0 / weapon.getArmorEffectiveness();
+
+
+
+    remainingDamage *= weapon.getHullEffectiveness();
+    if (remainingDamage > this->hullPoints_) {
+        remainingDamage -= this->hullPoints_;
+        this->hullPoints_ = -1.0;
+    }
+    else {
+        this->hullPoints_ -= remainingDamage;
+        return;
+    }
+    remainingDamage *= 1.0 / weapon.getHullEffectiveness();
 }
 
 long   Ship::getCost()         const {

@@ -10,7 +10,9 @@
 #define SHIPVARIANT_H
 
 enum class ShipVariant {
+    DRONE,
     PIRATE_FIGHTER,
+    PIRATE_SLOOP,
     PIRATE_GALLEON,
     MAX_SHIP_VARIANT,
 };
@@ -19,6 +21,7 @@ namespace shipvariant {
     Ship createShip(ShipVariant variant);
     void initializeMaps(); // all ship parameters defined here
 
+    extern std::map<ShipVariant, int> numberMadeMap;
     extern std::map<ShipVariant, std::string> nameMap;
     extern std::map<ShipVariant, std::string> pluralNameMap;
     extern std::map<ShipVariant, std::string> descriptionMap;
@@ -29,7 +32,7 @@ namespace shipvariant {
     extern std::map<ShipVariant, double> shieldPointsMap;
     extern std::map<ShipVariant, double> pointDefenseMap;
     extern std::map<ShipVariant, int> mobilityMap;
-    extern std::map<ShipVariant, std::vector<std::tuple<Weapon, int>>> weaponsMap;
+    extern std::map<ShipVariant, std::vector<std::tuple<WeaponVariant, int>>> weaponsMap;
 };
 
 #endif

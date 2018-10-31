@@ -19,6 +19,7 @@ class Ship : public AbstractIdentifier, public AbstractName {
         void addWeapon(WeaponVariant variant, int number=1);
         bool removeWeapon(const std::string& id, int number=-1);
         int rollInitiative();
+        void takeDamage(const Weapon& weapon, int number, double pointDefense);
 
         long   getCost()         const;
         int    getSize()         const;

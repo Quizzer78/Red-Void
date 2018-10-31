@@ -10,16 +10,18 @@
 
 int main() {
     shipvariant::initializeMaps();
+    weaponvariant::initializeMaps();
 
     State gameState {
         Scene::MAIN, // currentScene
-        500000, // currentCredits
-        500000,
+        0, // currentCredits
+        10000,
         { "Player Fleet", "Player Fleets", "This is the player's fleet." },
         { "Enemy Fleet", "Enemy Fleets", "This is the enemy's fleet." }
     };
 
     std::cout << "Welcome to Red Void version 0.1.\n";
+    gameState.currentCredits = gameState.defaultCredits;
 
     while (true) {
 

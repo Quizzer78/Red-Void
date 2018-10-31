@@ -18,12 +18,18 @@ class Fleet : public AbstractIdentifier, public AbstractName {
         bool removeShip(const std::string& id, int number=-1);
         void clear();
 
+        // Minimizes distance between damage and remaining health, accounting
+        // for effectiveness
+        Ship& findBestTarget(const Weapon& weapon, int number);
+
         Ship& getShip(const std::string& id);
-        const std::unordered_map<std::string, Ship>& getShips() const;
+        std::unordered_map<std::string, Ship>& getShips();
+        double getTotalPointDefense() const;
 
     private:
         std::unordered_map<std::string, Ship> ships_;
         long totalCost_;
+        double totalPointDefense_;
 };
 
 #endif
