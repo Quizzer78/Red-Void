@@ -1,4 +1,5 @@
 #include <string>
+#include <vector>
 
 #ifndef ABSTRACTIDENTIFIER_H
 #define ABSTRACTIDENTIFIER_H
@@ -14,6 +15,7 @@ class AbstractIdentifier {
 
     private:
         void generateID();
+        static std::vector<std::string> pastIds_;
 };
 
 #endif

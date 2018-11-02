@@ -20,7 +20,7 @@ int main() {
         { "Enemy Fleet", "Enemy Fleets", "This is the enemy's fleet." }
     };
 
-    std::cout << "Welcome to Red Void version 0.1.\n";
+    std::cout << "Welcome to Red Void version 0.3.\n";
     gameState.currentCredits = gameState.defaultCredits;
 
     while (true) {
