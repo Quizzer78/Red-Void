@@ -3,6 +3,7 @@
 #include <tuple>
 #include <vector>
 
+#include "Faction.h"
 #include "Ship.h"
 #include "weaponvariant.h"
 
@@ -33,6 +34,7 @@ namespace shipvariant {
     extern std::map<ShipVariant, std::string> nameMap;
     extern std::map<ShipVariant, std::string> pluralNameMap;
     extern std::map<ShipVariant, std::string> descriptionMap;
+    extern std::map<ShipVariant, Faction> factionMap;
     extern std::map<ShipVariant, long> costMap;
     extern std::map<ShipVariant, int> sizeMap;
     extern std::map<ShipVariant, double> hullPointsMap;

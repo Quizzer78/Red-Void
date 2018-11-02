@@ -4,6 +4,7 @@
 
 #include "AbstractIdentifier.h"
 #include "AbstractName.h"
+#include "Faction.h"
 #include "weaponvariant.h"
 
 #ifndef SHIP_H
@@ -12,24 +13,25 @@
 class Ship : public AbstractIdentifier, public AbstractName {
     public:
         Ship(std::string name, std::string pluralName, std::string description,
-             long cost, int size, double hullPoints, double armorPoints,
-             double shieldPoints, double pointDefense, int mobility,
-             std::vector<std::tuple<Weapon, int>> weapons);
+             Faction faction_, long cost, int size, double hullPoints,
+             double armorPoints, double shieldPoints, double pointDefense,
+             int mobility, std::vector<std::tuple<Weapon, int>> weapons);
 
         void addWeapon(WeaponVariant variant, int number=1);
         bool removeWeapon(const std::string& id, int number=-1);
         int rollInitiative();
-        void takeDamage(const Weapon& weapon, int number, double pointDefense);
+        void takeDamage(const Weapon& weapon, double pointDefense);
 
-        long   getCost()         const;
-        int    getSize()         const;
-        double getHullPoints()   const;
-        double getArmorPoints()  const;
-        double getShieldPoints() const;
-        int    getMobility()     const;
-        int    getInitiative()   const;
-        double getPointDefense() const;
-        const  std::vector<std::tuple<Weapon, int>>& getWeapons() const;
+        Faction getFaction()      const;
+        long    getCost()         const;
+        int     getSize()         const;
+        double  getHullPoints()   const;
+        double  getArmorPoints()  const;
+        double  getShieldPoints() const;
+        int     getMobility()     const;
+        int     getInitiative()   const;
+        double  getPointDefense() const;
+        const   std::vector<std::tuple<Weapon, int>>& getWeapons() const;
 
         void setCost        (long cost);
         void setHullPoints  (double hullPoints);
@@ -38,6 +40,7 @@ class Ship : public AbstractIdentifier, public AbstractName {
         void setInitiative  (int initiative);
 
     private:
+        Faction faction_;
         long   cost_;
         int    size_;
         double hullPoints_;

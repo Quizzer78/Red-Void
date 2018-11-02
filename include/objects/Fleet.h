@@ -20,7 +20,7 @@ class Fleet : public AbstractIdentifier, public AbstractName {
 
         // Minimizes distance between damage and remaining health, accounting
         // for effectiveness
-        Ship& findBestTarget(const Weapon& weapon, int number);
+        Ship& findBestTarget(const Weapon& weapon);
 
         Ship& getShip(const std::string& id);
         std::unordered_map<std::string, Ship>& getShips();

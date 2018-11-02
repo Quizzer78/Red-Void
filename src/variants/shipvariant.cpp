@@ -4,6 +4,7 @@
 #include <tuple>
 #include <vector>
 
+#include "Faction.h"
 #include "shipvariant.h"
 #include "weaponvariant.h"
 
@@ -11,6 +12,7 @@ std::map<ShipVariant, int> shipvariant::numberMadeMap;
 std::map<ShipVariant, std::string> shipvariant::nameMap;
 std::map<ShipVariant, std::string> shipvariant::pluralNameMap;
 std::map<ShipVariant, std::string> shipvariant::descriptionMap;
+std::map<ShipVariant, Faction> shipvariant::factionMap;
 std::map<ShipVariant, long> shipvariant::costMap;
 std::map<ShipVariant, int> shipvariant::sizeMap;
 std::map<ShipVariant, double> shipvariant::hullPointsMap;
@@ -31,6 +33,7 @@ Ship shipvariant::createShip(ShipVariant variant) {
         shipvariant::nameMap.at(variant),
         shipvariant::pluralNameMap.at(variant),
         shipvariant::descriptionMap.at(variant),
+        shipvariant::factionMap.at(variant),
         shipvariant::costMap.at(variant),
         shipvariant::sizeMap.at(variant),
         shipvariant::hullPointsMap.at(variant),
@@ -58,7 +61,8 @@ void shipvariant::initializeMaps() {
     shipvariant::  pluralNameMap.emplace( variant, "Drones" );
     shipvariant:: descriptionMap.emplace( variant,
         "A drone." );
-    shipvariant::        costMap.emplace( variant, 500 );
+    shipvariant::     factionMap.emplace( variant, Faction::NONE );
+    shipvariant::        costMap.emplace( variant, 5 );
     shipvariant::        sizeMap.emplace( variant, 1 );
     shipvariant::  hullPointsMap.emplace( variant, 1.0 );
     shipvariant:: armorPointsMap.emplace( variant, 0.0 );
@@ -75,7 +79,8 @@ void shipvariant::initializeMaps() {
     shipvariant::  pluralNameMap.emplace( variant, "Pirate Raiders" );
     shipvariant:: descriptionMap.emplace( variant,
         "A pirate raider." );
-    shipvariant::        costMap.emplace( variant, 800 );
+    shipvariant::     factionMap.emplace( variant, Faction::PIRATE );
+    shipvariant::        costMap.emplace( variant, 60 );
     shipvariant::        sizeMap.emplace( variant, 1 );
     shipvariant::  hullPointsMap.emplace( variant, 5.0 );
     shipvariant:: armorPointsMap.emplace( variant, 3.0 );
@@ -93,7 +98,8 @@ void shipvariant::initializeMaps() {
     shipvariant::  pluralNameMap.emplace( variant, "Pirate Bombers" );
     shipvariant:: descriptionMap.emplace( variant,
         "A pirate bomber." );
-    shipvariant::        costMap.emplace( variant, 1400 );
+    shipvariant::     factionMap.emplace( variant, Faction::PIRATE );
+    shipvariant::        costMap.emplace( variant, 90 );
     shipvariant::        sizeMap.emplace( variant, 2 );
     shipvariant::  hullPointsMap.emplace( variant, 7.0 );
     shipvariant:: armorPointsMap.emplace( variant, 4.0 );
@@ -110,7 +116,8 @@ void shipvariant::initializeMaps() {
     shipvariant::  pluralNameMap.emplace( variant, "Pirate Sloops" );
     shipvariant:: descriptionMap.emplace( variant,
         "A pirate sloop." );
-    shipvariant::        costMap.emplace( variant, 8000 );
+    shipvariant::     factionMap.emplace( variant, Faction::PIRATE );
+    shipvariant::        costMap.emplace( variant, 340 );
     shipvariant::        sizeMap.emplace( variant, 3 );
     shipvariant::  hullPointsMap.emplace( variant, 15.0 );
     shipvariant:: armorPointsMap.emplace( variant, 10.0 );
@@ -128,7 +135,8 @@ void shipvariant::initializeMaps() {
     shipvariant::  pluralNameMap.emplace( variant, "Pirate Galleons" );
     shipvariant:: descriptionMap.emplace( variant,
         "A pirate galleon." );
-    shipvariant::        costMap.emplace( variant, 80000 );
+    shipvariant::     factionMap.emplace( variant, Faction::PIRATE );
+    shipvariant::        costMap.emplace( variant, 1100 );
     shipvariant::        sizeMap.emplace( variant, 4 );
     shipvariant::  hullPointsMap.emplace( variant, 30.0 );
     shipvariant:: armorPointsMap.emplace( variant, 40.0 );
@@ -136,8 +144,7 @@ void shipvariant::initializeMaps() {
     shipvariant::pointDefenseMap.emplace( variant, 1.0 );
     shipvariant::    mobilityMap.emplace( variant, 4 );
     shipvariant::     weaponsMap.emplace( variant,
-        weaponvec{ { WeaponVariant::AUTOCANNON, 3 },
-                   { WeaponVariant::AUTOCANNON, 3 },
+        weaponvec{ { WeaponVariant::AUTOCANNON, 6 },
                    { WeaponVariant::EVISCERATOR_FLAK, 1 } }
     );
 
@@ -147,7 +154,8 @@ void shipvariant::initializeMaps() {
     shipvariant::  pluralNameMap.emplace( variant, "Imperial Fighters" );
     shipvariant:: descriptionMap.emplace( variant,
         "An Imperial fighter." );
-    shipvariant::        costMap.emplace( variant, 1600 );
+    shipvariant::     factionMap.emplace( variant, Faction::IMPERIAL );
+    shipvariant::        costMap.emplace( variant, 90 );
     shipvariant::        sizeMap.emplace( variant, 1 );
     shipvariant::  hullPointsMap.emplace( variant, 7.0 );
     shipvariant:: armorPointsMap.emplace( variant, 4.0 );
@@ -156,8 +164,7 @@ void shipvariant::initializeMaps() {
     shipvariant::    mobilityMap.emplace( variant, 7 );
     shipvariant::     weaponsMap.emplace( variant,
         weaponvec{ { WeaponVariant::PULSE_LASER, 2 },
-                   { WeaponVariant::INTERCEPTOR_MISSILE, 1 },
-                   { WeaponVariant::INTERCEPTOR_MISSILE, 1 } }
+                   { WeaponVariant::INTERCEPTOR_MISSILE, 2 } }
     );
 
     variant = ShipVariant::IMPERIAL_FRIGATE;
@@ -166,7 +173,8 @@ void shipvariant::initializeMaps() {
     shipvariant::  pluralNameMap.emplace( variant, "Imperial Frigates" );
     shipvariant:: descriptionMap.emplace( variant,
         "An Imperial frigate." );
-    shipvariant::        costMap.emplace( variant, 11000 );
+    shipvariant::     factionMap.emplace( variant, Faction::IMPERIAL );
+    shipvariant::        costMap.emplace( variant, 500 );
     shipvariant::        sizeMap.emplace( variant, 3 );
     shipvariant::  hullPointsMap.emplace( variant, 20.0 );
     shipvariant:: armorPointsMap.emplace( variant, 10.0 );
@@ -175,8 +183,8 @@ void shipvariant::initializeMaps() {
     shipvariant::    mobilityMap.emplace( variant, 4 );
     shipvariant::     weaponsMap.emplace( variant,
         weaponvec{ { WeaponVariant::SMALL_RAILGUN, 2 },
-                   { WeaponVariant::LIGHT_MISSILE, 1 },
-                   { WeaponVariant::LIGHT_MISSILE, 1 } }
+                   { WeaponVariant::RAILGUN, 2 },
+                   { WeaponVariant::LIGHT_MISSILE, 2 } }
     );
 
     variant = ShipVariant::IMPERIAL_CRUISER;
@@ -185,7 +193,8 @@ void shipvariant::initializeMaps() {
     shipvariant::  pluralNameMap.emplace( variant, "Imperial Cruisers" );
     shipvariant:: descriptionMap.emplace( variant,
         "An Imperial cruiser." );
-    shipvariant::        costMap.emplace( variant, 100000 );
+    shipvariant::     factionMap.emplace( variant, Faction::IMPERIAL );
+    shipvariant::        costMap.emplace( variant, 1300 );
     shipvariant::        sizeMap.emplace( variant, 4 );
     shipvariant::  hullPointsMap.emplace( variant, 30.0 );
     shipvariant:: armorPointsMap.emplace( variant, 30.0 );
@@ -194,7 +203,7 @@ void shipvariant::initializeMaps() {
     shipvariant::    mobilityMap.emplace( variant, 3 );
     shipvariant::     weaponsMap.emplace( variant,
         weaponvec{ { WeaponVariant::PULSE_LASER, 2 },
-                   { WeaponVariant::PULSE_LASER, 2 },
+                   { WeaponVariant::RAILGUN, 6 },
                    { WeaponVariant::LIGHT_MISSILE, 1 },
                    { WeaponVariant::HEAVY_MISSILE, 1 } }
     );
@@ -205,7 +214,8 @@ void shipvariant::initializeMaps() {
     shipvariant::  pluralNameMap.emplace( variant, "Imperial Dreadnoughts" );
     shipvariant:: descriptionMap.emplace( variant,
         "An Imperial dreadnought." );
-    shipvariant::        costMap.emplace( variant, 1000000 );
+    shipvariant::     factionMap.emplace( variant, Faction::IMPERIAL );
+    shipvariant::        costMap.emplace( variant, 5500 );
     shipvariant::        sizeMap.emplace( variant, 5 );
     shipvariant::  hullPointsMap.emplace( variant, 50.0 );
     shipvariant:: armorPointsMap.emplace( variant, 45.0 );
@@ -213,9 +223,7 @@ void shipvariant::initializeMaps() {
     shipvariant::pointDefenseMap.emplace( variant, 0.3 );
     shipvariant::    mobilityMap.emplace( variant, 2 );
     shipvariant::     weaponsMap.emplace( variant,
-        weaponvec{ { WeaponVariant::RAILGUN, 3 },
-                   { WeaponVariant::RAILGUN, 3 },
-                   { WeaponVariant::RAILGUN, 3 },
-                   { WeaponVariant::PARTICLE_BEAM, 1 } }
+        weaponvec{ { WeaponVariant::RAILGUN, 10 },
+                   { WeaponVariant::PARTICLE_BEAM, 2 } }
     );
 }

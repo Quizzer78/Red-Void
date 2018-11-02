@@ -1,3 +1,5 @@
+#include <ios>
+#include <iomanip>
 #include <iostream>
 #include <string>
 
@@ -15,12 +17,13 @@ int main() {
     State gameState {
         Scene::MAIN, // currentScene
         0, // currentCredits
-        100000,
+        10000,
         { "Player Fleet", "Player Fleets", "This is the player's fleet." },
         { "Enemy Fleet", "Enemy Fleets", "This is the enemy's fleet." }
     };
 
     std::cout << "Welcome to Red Void version 0.3.\n";
+    std::cout << std::setprecision(2);
     gameState.currentCredits = gameState.defaultCredits;
 
     while (true) {

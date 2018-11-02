@@ -1,3 +1,5 @@
+#include <ios>
+#include <iomanip>
 #include <iostream>
 #include <queue>
 #include <stdexcept>
@@ -5,6 +7,7 @@
 #include <vector>
 #include <Windows.h>
 
+#include "Faction.h"
 #include "Fleet.h"
 #include "game.h"
 #include "input.h"
@@ -144,12 +147,20 @@ void game::runSetup(State& state) {
         // CREATE ENEMY FLEET
         if (state.enemyFleet.getShips().empty()) {
             long enemyCredits { state.defaultCredits };
-            std::uniform_int_distribution<int> distribution
+            std::uniform_int_distribution<int> distributionFaction
+                { 1, static_cast<int>(Faction::MAX_FACTION) - 1 };
+
+            Faction faction = static_cast<Faction>(distributionFaction(random::engine));
+
+            std::uniform_int_distribution<int> distributionShip
                 { 0, static_cast<int>(ShipVariant::MAX_SHIP_VARIANT) - 1 };
-            while (enemyCredits >= 500) {
-                ShipVariant variant = static_cast<ShipVariant>(distribution(random::engine));
+
+            while (enemyCredits >= shipvariant::costMap.at(ShipVariant::DRONE)) {
+                ShipVariant variant = static_cast<ShipVariant>(distributionShip(random::engine));
                 long cost = shipvariant::costMap.at(variant);
-                if (cost <= enemyCredits) {
+                if (cost <= enemyCredits && (shipvariant::factionMap.at(variant) == faction
+                    || shipvariant::factionMap.at(variant) == Faction::NONE)) {
+
                     state.enemyFleet.addShip(variant);
                     enemyCredits -= cost;
                 }
@@ -188,7 +199,7 @@ void game::runBattle(State& state) {
         std::cout << ship.getName() << ": " << ship.rollInitiative() << '\n';
         orderQueue.push(&ship);
     }
-    Sleep(500);
+    Sleep(5000);
     std::deque<Ship*> initiativeDeque;
     while (!orderQueue.empty()) {
         initiativeDeque.push_back(orderQueue.top());
@@ -229,53 +240,62 @@ void game::runBattle(State& state) {
         for (const auto& weaponPair : activeShip->getWeapons()) {
             const Weapon& weapon = std::get<0>(weaponPair);
             int num = std::get<1>(weaponPair);
-            if (targetShips->empty()) {
-                break;
-            }
-            // Find target
-            Ship& target = targetFleet->findBestTarget(weapon, num);
+            for (int i = 0; i < num; ++i) {
+                if (targetShips->empty()) {
+                    break;
+                }
+                // Find target
+                Ship& target = targetFleet->findBestTarget(weapon);
 
-            if (num == 1) {
+
                 std::cout << activeShip->getName() << " fires its "
                           << weapon.getName() << " at " << target.getName() << "!\n";
-            }
-            else {
-                std::cout << activeShip->getName() << " fires its " << num << " "
-                          << weapon.getPluralName() << " at " << target.getName() << "!\n";
-            }
-            Sleep(500);
+
+                Sleep(500);
 
 
-            // Attempt attack
-            std::uniform_real_distribution<double> distribution { 0.0, 1.0 };
-            if (distribution(random::engine) <
-                weapon.getAccuracy() * (10.0 / (target.getMobility() + 10.0))) {
+                // Attempt attack
+                std::uniform_real_distribution<double> distribution { 0.0, 1.0 };
+                if (distribution(random::engine) <
+                    weapon.getAccuracy() * (10.0 / (target.getMobility() + 10.0))) {
 
-                std::cout << activeShip->getName() << " hits!\n";
+                    double initialHealth[]
+                        { target.getHullPoints(), target.getArmorPoints(),
+                        target.getShieldPoints() };
 
-                // Deal damage
-                target.takeDamage(weapon, num, targetFleet->getTotalPointDefense());
+                    // Deal damage
+                    target.takeDamage(weapon, targetFleet->getTotalPointDefense());
 
-                if (target.getHullPoints() <= 0.0) {
-                    std::cout << target.getName() << " is destroyed!\n";
+                    double finalHealth[]
+                        { target.getHullPoints(), target.getArmorPoints(),
+                        target.getShieldPoints() };
 
-                    if(!targetFleet->removeShip(target.getID())) {
-                        std::cerr << "Error, ship not removed\n";
-                    }
-                    for (auto it = initiativeDeque.begin(); it != initiativeDeque.end(); ) {
-                        if ((*it)->getID() == target.getID()) {
-                            it = initiativeDeque.erase(it);
+                    std::cout << "Hit! (" << initialHealth[0] << ", "
+                        << initialHealth[1] << ", " << initialHealth[2] << ") -> ("
+                        << finalHealth[0] << ", " << finalHealth[1] << ", "
+                        << finalHealth[2] << ")\n";
+
+                    if (target.getHullPoints() <= 0.0) {
+                        std::cout << target.getName() << " is destroyed!\n";
+
+                        if(!targetFleet->removeShip(target.getID())) {
+                            std::cerr << "Error, ship not removed\n";
                         }
-                        else {
-                            ++it;
+                        for (auto it = initiativeDeque.begin(); it != initiativeDeque.end(); ) {
+                            if ((*it)->getID() == target.getID()) {
+                                it = initiativeDeque.erase(it);
+                            }
+                            else {
+                                ++it;
+                            }
                         }
                     }
                 }
+                else {
+                    std::cout << "Miss!\n";
+                }
+                Sleep(500);
             }
-            else {
-                std::cout << activeShip->getName() << " misses!\n";
-            }
-            Sleep(500);
         }
         initiativeDeque.push_back(activeShip);
     }

@@ -40,8 +40,8 @@ void Fleet::clear() {
     totalPointDefense_ = 0.0;
 }
 
-Ship& Fleet::findBestTarget(const Weapon& weapon, int number) {
-    double totalDamage { weapon.getDamage() * (number * 1.0) };
+Ship& Fleet::findBestTarget(const Weapon& weapon) {
+    double totalDamage { weapon.getDamage() };
     double targetHull, targetArmor, targetShield;
     Ship* bestTarget { nullptr };
     double bestDamageDifference { 1000.0 };
